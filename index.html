@@ -241,6 +241,11 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
+        
+        /* Datum-sektion behåller två kolumner längre */
+        .two-column.date-row {
+            grid-template-columns: 1fr 1fr;
+        }
 
         @media (max-width: 768px) {
             .header h1 {
@@ -266,6 +271,13 @@
 
             .two-column {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            /* Datumfält bredvid varandra även på mobil */
+            .two-column.date-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
             }
         }
 
@@ -281,6 +293,25 @@
             .header {
                 padding: 30px 20px;
             }
+            
+            /* På väldigt små skärmar, stapla datumfälten */
+            .two-column.date-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+        }
+
+        /* Fix för datumfält på iOS/mobil */
+        input[type="date"] {
+            min-height: 48px;
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: white;
+        }
+        
+        /* Bättre padding för datumfält */
+        input[type="date"]::-webkit-date-and-time-value {
+            text-align: left;
         }
 
         .allergen-note {
@@ -413,9 +444,6 @@
         }
 
         .lang-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             background: rgba(255,255,255,0.2);
             color: white;
             border: 2px solid rgba(255,255,255,0.4);
@@ -425,10 +453,18 @@
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
+            /* Desktop: absolut position */
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
 
         .lang-toggle:hover {
             background: rgba(255,255,255,0.3);
+        }
+        
+        .logo-container {
+            position: relative;
         }
 
         @media (max-width: 480px) {
@@ -436,14 +472,26 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            
+            /* Flytta språkknappen under loggan på mobil */
+            .lang-toggle {
+                position: static;
+                display: block;
+                margin: 15px auto 0 auto;
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+            
+            .header {
+                padding-top: 25px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <button class="lang-toggle" onclick="toggleLanguage()">🇬🇧 English</button>
-            <div style="text-align: center; margin-bottom: 30px;">
+            <div class="logo-container" style="text-align: center; margin-bottom: 20px;">
                 <img src="https://malmo.massrestauranger.se/media/site/86ae8643e3-1737976781/massrestauranger-logo.svg" 
                      alt="Mässrestauranger" 
                      style="height: 80px; width: auto; filter: brightness(0) invert(1);"
@@ -456,6 +504,7 @@
                         MÄSS<br>RESTAURANGER
                     </div>
                 </div>
+                <button class="lang-toggle" onclick="toggleLanguage()">🇬🇧 English</button>
             </div>
             <h1 class="main-title">Dietregistrering</h1>
             <p class="main-subtitle">Specialkost & Allergier</p>
@@ -504,7 +553,7 @@
                     <input type="text" id="eventName" name="eventName" required placeholder="T.ex. Årskonferens 2026">
                 </div>
 
-                <div class="two-column">
+                <div class="two-column date-row">
                     <div class="form-group">
                         <label for="eventStartDate">Startdatum <span class="required">*</span></label>
                         <input type="date" id="eventStartDate" name="eventStartDate" required>
