@@ -1554,7 +1554,7 @@
                 dayHeaderRow.getCell(1).value = `${weekday} ${dateLabel}`;
                 dayHeaderRow.getCell(1).font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' } };
                 dayHeaderRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3D6B1F' } };
-                wsOverview.mergeCells(overviewRow, 1, overviewRow, 4);
+                wsOverview.mergeCells(overviewRow, 1, overviewRow, 3);
                 overviewRow++;
                 
                 // Gå igenom varje måltid
@@ -1566,50 +1566,49 @@
                     
                     if (mealPeople.length === 0) return;
                     
-                    // Räkna preferenser och allergier för denna måltid
-                    const mealDietCounts = {};
-                    const mealAllergenCounts = {};
-                    
-                    mealPeople.forEach(p => {
-                        p.dietPreferences.forEach(d => {
-                            mealDietCounts[d] = (mealDietCounts[d] || 0) + 1;
-                        });
-                        p.allergens.forEach(a => {
-                            mealAllergenCounts[a] = (mealAllergenCounts[a] || 0) + 1;
-                        });
-                    });
-                    
-                    // Bygg upp textsträng med alla counts
-                    let countParts = [];
-                    
-                    // Lägg till preferenser
-                    Object.entries(mealDietCounts).forEach(([diet, count]) => {
-                        countParts.push(`${count} ${tExport(diet).toLowerCase()}`);
-                    });
-                    
-                    // Lägg till allergier  
-                    Object.entries(mealAllergenCounts).forEach(([allergen, count]) => {
-                        countParts.push(`${count} ${tExport(allergen).toLowerCase()}`);
-                    });
-                    
-                    const row = wsOverview.getRow(overviewRow);
-                    row.getCell(1).value = `  ${tExport(mealKey)}`;
-                    row.getCell(1).font = { bold: true };
-                    row.getCell(2).value = `${mealPeople.length} st`;
-                    row.getCell(2).font = { color: { argb: 'FF3D6B1F' } };
-                    row.getCell(3).value = countParts.join(', ');
-                    row.getCell(3).font = { color: { argb: 'FF666666' } };
-                    
+                    // Måltidsrad
+                    const mealRow = wsOverview.getRow(overviewRow);
+                    mealRow.getCell(1).value = tExport(mealKey);
+                    mealRow.getCell(1).font = { bold: true };
+                    mealRow.getCell(2).value = `${mealPeople.length} st`;
+                    mealRow.getCell(2).font = { bold: true, color: { argb: 'FF3D6B1F' } };
                     overviewRow++;
+                    
+                    // Räkna unika kombinationer
+                    const comboCounts = {};
+                    mealPeople.forEach(p => {
+                        // Skapa en nyckel för kombinationen
+                        const allItems = [
+                            ...p.dietPreferences.map(d => tExport(d)),
+                            ...p.allergens.map(a => tExport(a))
+                        ].sort();
+                        const comboKey = allItems.join(' + ');
+                        
+                        if (!comboCounts[comboKey]) {
+                            comboCounts[comboKey] = { count: 0, names: [] };
+                        }
+                        comboCounts[comboKey].count++;
+                        comboCounts[comboKey].names.push(p.name || (exportLang === 'sv' ? 'Namnlös' : 'Unnamed'));
+                    });
+                    
+                    // Visa varje kombination
+                    Object.entries(comboCounts)
+                        .sort((a, b) => b[1].count - a[1].count)
+                        .forEach(([combo, data]) => {
+                            const comboRow = wsOverview.getRow(overviewRow);
+                            comboRow.getCell(1).value = `    ${data.count} st: ${combo}`;
+                            comboRow.getCell(1).font = { color: { argb: 'FF666666' } };
+                            overviewRow++;
+                        });
                 });
                 
                 overviewRow++; // Tom rad mellan dagar
             });
             
             // Kolumnbredder
-            wsOverview.getColumn(1).width = 20;
+            wsOverview.getColumn(1).width = 60;
             wsOverview.getColumn(2).width = 10;
-            wsOverview.getColumn(3).width = 80;
+            wsOverview.getColumn(3).width = 20;
 
             // Ladda ner
             const buffer = await workbook.xlsx.writeBuffer();
@@ -1649,42 +1648,45 @@
             doc.setTextColor(80, 80, 80);
             doc.setDrawColor(61, 107, 31);
             doc.setLineWidth(0.5);
-            doc.rect(20, y, 170, 28);
+            doc.rect(20, y, 170, 35);
             
-            y += 7;
+            y += 8;
+            // Rad 1: Företag och Kontakt
             doc.setFont(undefined, 'bold');
             doc.text(`${tExport('company')}:`, 25, y);
             doc.setFont(undefined, 'normal');
-            doc.text(companyName, 55, y);
+            doc.text(companyName, 50, y);
             
             doc.setFont(undefined, 'bold');
-            doc.text(`${tExport('contact')}:`, 105, y);
+            doc.text(`${tExport('contact')}:`, 115, y);
             doc.setFont(undefined, 'normal');
-            doc.text(contactPerson, 130, y);
+            doc.text(contactPerson, 140, y);
             
-            y += 7;
+            y += 8;
+            // Rad 2: E-post och Telefon
             doc.setFont(undefined, 'bold');
             doc.text(`${tExport('email')}:`, 25, y);
             doc.setFont(undefined, 'normal');
-            doc.text(contactEmail, 55, y);
+            doc.text(contactEmail, 50, y);
             
             doc.setFont(undefined, 'bold');
-            doc.text(`${tExport('phone')}:`, 105, y);
+            doc.text(`${tExport('phone')}:`, 115, y);
             doc.setFont(undefined, 'normal');
-            doc.text(contactPhone, 130, y);
+            doc.text(contactPhone, 155, y);
             
-            y += 7;
+            y += 8;
+            // Rad 3: Period och Antal
             doc.setFont(undefined, 'bold');
             doc.text(`${tExport('period')}:`, 25, y);
             doc.setFont(undefined, 'normal');
-            doc.text(`${formatDateLongExport(eventStartDate)} - ${formatDateLongExport(eventEndDate)}`, 55, y);
+            doc.text(`${formatDateLongExport(eventStartDate)} - ${formatDateLongExport(eventEndDate)}`, 50, y);
             
             doc.setFont(undefined, 'bold');
-            doc.text(`${tExport('specialDiet')}:`, 105, y);
+            doc.text(`${tExport('specialDiet')}:`, 115, y);
             doc.setFont(undefined, 'normal');
-            doc.text(`${participants.length} st`, 145, y);
+            doc.text(`${participants.length} st`, 155, y);
             
-            y += 18;
+            y += 20;
             
             // Deltagarlista
             doc.setFontSize(10);
