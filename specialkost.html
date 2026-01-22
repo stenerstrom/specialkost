@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dietregistrering - Mässrestauranger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .form-section {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3d6b1f;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #3d6b1f;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(45, 80, 22, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-add {
+            background: #2ecc71;
+            padding: 10px 25px;
+            font-size: 0.95em;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .success-message {
+            background: #2ecc71;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #3d6b1f;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 30px 0 20px 0;
+            border-left: 4px solid #3d6b1f;
+        }
+
+        .section-header h3 {
+            color: #333;
+            margin: 0;
+        }
+
+        .participant-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .participant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .participant-header h4 {
+            color: #3d6b1f;
+            margin: 0;
+        }
+
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .allergen-note {
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .export-btn {
+            background: #3498db;
+            margin-top: 20px;
+            display: inline-block;
+            width: auto;
+            padding: 12px 30px;
+            font-size: 1em;
+        }
+
+        .export-btn:hover {
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Nya stilar för dag-måltidsval */
+        .day-meal-container {
+            margin-top: 10px;
+        }
+
+        .day-meal-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .day-meal-item.active {
+            border-color: #3d6b1f;
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #fafafa;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .day-header:hover {
+            background: #f0f0f0;
+        }
+
+        .day-header input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #3d6b1f;
+        }
+
+        .day-header .day-label {
+            font-weight: 600;
+            color: #333;
+            flex-grow: 1;
+        }
+
+        .day-header .meal-summary {
+            font-size: 0.85em;
+            color: #666;
+            margin-right: 10px;
+        }
+
+        .day-header .expand-icon {
+            color: #999;
+            transition: transform 0.2s;
+            font-size: 1.2em;
+        }
+
+        .day-meal-item.active .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .meal-options {
+            display: none;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .day-meal-item.active .meal-options {
+            display: block;
+        }
+
+        .meal-options .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin: 0;
+        }
+
+        .meal-options .checkbox-item {
+            margin: 0;
+        }
+
+        .no-dates-message {
+            color: #666;
+            font-size: 0.9em;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .btn-allday {
+            background: #3d6b1f;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-allday:hover {
+            background: #2d5016;
+        }
+
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.4);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="lang-toggle" onclick="toggleLanguage()">🇬🇧 English</button>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <img src="https://malmo.massrestauranger.se/media/site/86ae8643e3-1737976781/massrestauranger-logo.svg" 
+                     alt="Mässrestauranger" 
+                     style="height: 80px; width: auto; filter: brightness(0) invert(1);"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display: none;">
+                    <div style="margin-bottom: 5px;">
+                        <span style="font-size: 18px; letter-spacing: 3px;">♦ ♦ ♦</span>
+                    </div>
+                    <div style="font-size: 32px; font-weight: 900; letter-spacing: 1px; line-height: 1.2;">
+                        MÄSS<br>RESTAURANGER
+                    </div>
+                </div>
+            </div>
+            <h1 style="font-size: 4em; font-weight: bold; margin: 20px 0 15px 0; letter-spacing: -1px;">Dietregistrering</h1>
+            <p style="font-size: 1.5em; font-weight: 400;">Specialkost & Allergier</p>
+        </div>
+
+        <div class="form-section">
+            <div class="success-message" id="successMessage">
+                ✓ Registreringen har sparats!
+            </div>
+
+            <form id="dietForm">
+                <div class="section-header">
+                    <h3>Företagsinformation</h3>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="companyName">Företagsnamn <span class="required">*</span></label>
+                        <input type="text" id="companyName" name="companyName" required placeholder="ABC AB">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactPerson">Kontaktperson <span class="required">*</span></label>
+                        <input type="text" id="contactPerson" name="contactPerson" required placeholder="För- och efternamn">
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="contactEmail">E-post <span class="required">*</span></label>
+                        <input type="email" id="contactEmail" name="contactEmail" required placeholder="kontakt@foretag.se">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactPhone">Telefonnummer <span class="required">*</span></label>
+                        <input type="tel" id="contactPhone" name="contactPhone" required placeholder="070-123 45 67">
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h3>Eventinformation</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventName">Eventnamn <span class="required">*</span></label>
+                    <input type="text" id="eventName" name="eventName" required placeholder="T.ex. Årskonferens 2026">
+                </div>
+
+                <div class="two-column">
+                    <div class="form-group">
+                        <label for="eventStartDate">Startdatum <span class="required">*</span></label>
+                        <input type="date" id="eventStartDate" name="eventStartDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventEndDate">Slutdatum <span class="required">*</span></label>
+                        <input type="date" id="eventEndDate" name="eventEndDate" required>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h3>Deltagare med dietbehov</h3>
+                </div>
+
+                <div id="participantsContainer"></div>
+
+                <button type="button" class="btn btn-add" onclick="addParticipant()">+ Lägg till deltagare med dietbehov</button>
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <label for="additionalInfo">Övrig information</label>
+                    <textarea id="additionalInfo" name="additionalInfo" placeholder="Annan viktig information om eventet eller dietbehov..."></textarea>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">Spara och granska registrering</button>
+            </form>
+
+            <div id="summarySection" style="display: none;">
+                <div class="section-header">
+                    <h3>Sammanställning</h3>
+                </div>
+                <div id="summaryContent"></div>
+                <div class="export-section" style="margin-top: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; margin-right: 10px;">Exportspråk / Export language:</label>
+                        <select id="exportLang" style="padding: 8px 12px; border-radius: 6px; border: 2px solid #e0e0e0; font-size: 1em;">
+                            <option value="sv">🇸🇪 Svenska</option>
+                            <option value="en">🇬🇧 English</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button onclick="exportToPDF()" class="btn export-btn" style="background: #e74c3c;">📄 PDF</button>
+                        <button onclick="exportToExcel()" class="btn export-btn" style="background: #217346;">📗 Excel (Kök)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <script>
+        let participantCounter = 0;
+        let participants = [];
+        let currentLang = 'sv';
+
+        const translations = {
+            sv: {
+                pageTitle: 'Dietregistrering',
+                pageSubtitle: 'Specialkost & Allergier',
+                companyInfo: 'Företagsinformation',
+                companyName: 'Företagsnamn',
+                contactPerson: 'Kontaktperson',
+                email: 'E-post',
+                phone: 'Telefonnummer',
+                eventInfo: 'Eventinformation',
+                eventName: 'Eventnamn',
+                eventNamePlaceholder: 'T.ex. Årskonferens 2026',
+                startDate: 'Startdatum',
+                endDate: 'Slutdatum',
+                participantsWithDiet: 'Deltagare med dietbehov',
+                addParticipant: '+ Lägg till deltagare med dietbehov',
+                additionalInfo: 'Övrig information',
+                additionalInfoPlaceholder: 'Annan viktig information om eventet eller dietbehov...',
+                saveAndReview: 'Spara och granska registrering',
+                summary: 'Sammanställning',
+                participant: 'Deltagare',
+                name: 'Namn',
+                namePlaceholder: 'För- och efternamn',
+                attendanceDays: 'Närvarodagar & måltider',
+                attendanceHelp: 'Klicka på en dag för att välja vilka måltider deltagaren ska ha den dagen',
+                selectMeals: 'Välj måltider →',
+                allDay: 'Heldag',
+                dietPreferences: 'Kostpreferenser',
+                allergies: 'Allergier',
+                comments: 'Kommentarer',
+                commentsPlaceholder: 'Övrig info...',
+                remove: 'Ta bort',
+                company: 'Företag',
+                contact: 'Kontakt',
+                event: 'Event',
+                period: 'Period',
+                specialDiet: 'Specialkost',
+                daysAndMeals: 'Dagar & måltider',
+                diet: 'Kost',
+                comment: 'Kommentar',
+                registrationSaved: '✓ Registreringen har sparats!',
+                selectDatesFirst: 'Välj start- och slutdatum för mässan först',
+                endDateError: 'Slutdatum måste vara efter startdatum',
+                selectDayError: 'Välj minst en dag för',
+                selectMealError: 'Välj minst en måltid för',
+                selectDietError: 'Välj minst en allergi eller kostpreferens för',
+                addParticipantError: 'Lägg till minst en deltagare',
+                langButton: '🇬🇧 English',
+                // Måltider
+                breakfast: 'Frukost',
+                fika: 'Fika',
+                lunch: 'Lunch',
+                dinner: 'Middag',
+                // Kostpreferenser
+                vegetarian: 'Vegetarisk',
+                vegan: 'Vegansk',
+                pescetarian: 'Pescetarian',
+                pregnant: 'Gravid',
+                ibs: 'IBS',
+                halal: 'Halal',
+                // Allergener
+                gluten: 'Gluten',
+                lactose: 'Laktos',
+                milk: 'Mjölkprotein',
+                legumes: 'Baljväxter',
+                crustaceans: 'Kräftdjur',
+                egg: 'Ägg',
+                fish: 'Fisk',
+                peanuts: 'Jordnötter',
+                lupin: 'Lupin',
+                soy: 'Soja',
+                nuts: 'Nötter',
+                stonefruit: 'Stenfrukt',
+                celery: 'Selleri',
+                mustard: 'Senap',
+                sesame: 'Sesamfrön',
+                sulfur: 'Svaveldioxid/Sulfit',
+                molluscs: 'Blötdjur',
+                // Veckodagar
+                sunday: 'Söndag',
+                monday: 'Måndag',
+                tuesday: 'Tisdag',
+                wednesday: 'Onsdag',
+                thursday: 'Torsdag',
+                friday: 'Fredag',
+                saturday: 'Lördag',
+                // Månader
+                months: ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
+            },
+            en: {
+                pageTitle: 'Diet Registration',
+                pageSubtitle: 'Special Diets & Allergies',
+                companyInfo: 'Company Information',
+                companyName: 'Company Name',
+                contactPerson: 'Contact Person',
+                email: 'Email',
+                phone: 'Phone Number',
+                eventInfo: 'Event Information',
+                eventName: 'Event Name',
+                eventNamePlaceholder: 'E.g. Annual Conference 2026',
+                startDate: 'Start Date',
+                endDate: 'End Date',
+                participantsWithDiet: 'Participants with Dietary Needs',
+                addParticipant: '+ Add participant with dietary needs',
+                additionalInfo: 'Additional Information',
+                additionalInfoPlaceholder: 'Other important information about the event or dietary needs...',
+                saveAndReview: 'Save and Review Registration',
+                summary: 'Summary',
+                participant: 'Participant',
+                name: 'Name',
+                namePlaceholder: 'First and last name',
+                attendanceDays: 'Attendance Days & Meals',
+                attendanceHelp: 'Click on a day to select which meals the participant will have that day',
+                selectMeals: 'Select meals →',
+                allDay: 'All Day',
+                dietPreferences: 'Diet Preferences',
+                allergies: 'Allergies',
+                comments: 'Comments',
+                commentsPlaceholder: 'Other info...',
+                remove: 'Remove',
+                company: 'Company',
+                contact: 'Contact',
+                event: 'Event',
+                period: 'Period',
+                specialDiet: 'Special Diet',
+                daysAndMeals: 'Days & Meals',
+                diet: 'Diet',
+                comment: 'Comment',
+                registrationSaved: '✓ Registration has been saved!',
+                selectDatesFirst: 'Select start and end dates first',
+                endDateError: 'End date must be after start date',
+                selectDayError: 'Select at least one day for',
+                selectMealError: 'Select at least one meal for',
+                selectDietError: 'Select at least one allergy or diet preference for',
+                addParticipantError: 'Add at least one participant',
+                langButton: '🇸🇪 Svenska',
+                // Meals
+                breakfast: 'Breakfast',
+                fika: 'Fika',
+                lunch: 'Lunch',
+                dinner: 'Dinner',
+                // Diet preferences
+                vegetarian: 'Vegetarian',
+                vegan: 'Vegan',
+                pescetarian: 'Pescetarian',
+                pregnant: 'Pregnant',
+                ibs: 'IBS',
+                halal: 'Halal',
+                // Allergens
+                gluten: 'Gluten',
+                lactose: 'Lactose',
+                milk: 'Milk Protein',
+                legumes: 'Legumes',
+                crustaceans: 'Crustaceans',
+                egg: 'Egg',
+                fish: 'Fish',
+                peanuts: 'Peanuts',
+                lupin: 'Lupin',
+                soy: 'Soy',
+                nuts: 'Tree Nuts',
+                stonefruit: 'Stone Fruit',
+                celery: 'Celery',
+                mustard: 'Mustard',
+                sesame: 'Sesame Seeds',
+                sulfur: 'Sulfur Dioxide/Sulfite',
+                molluscs: 'Molluscs',
+                // Weekdays
+                sunday: 'Sunday',
+                monday: 'Monday',
+                tuesday: 'Tuesday',
+                wednesday: 'Wednesday',
+                thursday: 'Thursday',
+                friday: 'Friday',
+                saturday: 'Saturday',
+                // Months
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+            }
+        };
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        // Översättningsfunktion för export (använder valt exportspråk)
+        function tExport(key) {
+            const exportLang = document.getElementById('exportLang')?.value || currentLang;
+            return translations[exportLang][key] || key;
+        }
+
+        // Hämta månader för export
+        function getExportMonths() {
+            const exportLang = document.getElementById('exportLang')?.value || currentLang;
+            return translations[exportLang].months;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'sv' ? 'en' : 'sv';
+            updatePageLanguage();
+        }
+
+        function updatePageLanguage() {
+            // Uppdatera språkknappen
+            document.querySelector('.lang-toggle').textContent = t('langButton');
+            
+            // Uppdatera header
+            document.querySelector('.header h1').textContent = t('pageTitle');
+            document.querySelector('.header p[style*="font-size: 1.5em"]').textContent = t('pageSubtitle');
+            
+            // Uppdatera sektionsrubriker
+            const sectionHeaders = document.querySelectorAll('.section-header h3');
+            if (sectionHeaders[0]) sectionHeaders[0].textContent = t('companyInfo');
+            if (sectionHeaders[1]) sectionHeaders[1].textContent = t('eventInfo');
+            if (sectionHeaders[2]) sectionHeaders[2].textContent = t('participantsWithDiet');
+            
+            // Uppdatera labels
+            document.querySelector('label[for="companyName"]').innerHTML = t('companyName') + ' <span class="required">*</span>';
+            document.querySelector('label[for="contactPerson"]').innerHTML = t('contactPerson') + ' <span class="required">*</span>';
+            document.querySelector('label[for="contactEmail"]').innerHTML = t('email') + ' <span class="required">*</span>';
+            document.querySelector('label[for="contactPhone"]').innerHTML = t('phone') + ' <span class="required">*</span>';
+            document.querySelector('label[for="eventName"]').innerHTML = t('eventName') + ' <span class="required">*</span>';
+            document.querySelector('label[for="eventStartDate"]').innerHTML = t('startDate') + ' <span class="required">*</span>';
+            document.querySelector('label[for="eventEndDate"]').innerHTML = t('endDate') + ' <span class="required">*</span>';
+            document.querySelector('label[for="additionalInfo"]').textContent = t('additionalInfo');
+            
+            // Uppdatera placeholders
+            document.getElementById('eventName').placeholder = t('eventNamePlaceholder');
+            document.getElementById('additionalInfo').placeholder = t('additionalInfoPlaceholder');
+            
+            // Uppdatera knappar
+            document.querySelector('.btn-add').textContent = t('addParticipant');
+            document.querySelector('button[type="submit"]').textContent = t('saveAndReview');
+            
+            // Uppdatera alla deltagare
+            updateAllParticipantsLanguage();
+        }
+
+        function updateAllParticipantsLanguage() {
+            const participantDivs = document.querySelectorAll('.participant-item');
+            participantDivs.forEach(div => {
+                const id = div.getAttribute('data-id');
+                
+                // Uppdatera rubrik
+                const header = div.querySelector('.participant-header h4');
+                if (header) header.textContent = t('participant') + ' ' + id;
+                
+                // Uppdatera labels
+                const labels = div.querySelectorAll('label');
+                labels.forEach(label => {
+                    const forAttr = label.getAttribute('for');
+                    if (forAttr && forAttr.startsWith('participantName')) {
+                        label.textContent = t('name');
+                    }
+                    if (forAttr && forAttr.startsWith('participantNotes')) {
+                        label.textContent = t('comments');
+                    }
+                });
+                
+                // Uppdatera andra labels via text
+                const allLabels = div.querySelectorAll('.form-group > label');
+                allLabels.forEach(label => {
+                    const text = label.textContent.trim();
+                    if (text.includes('Närvarodagar') || text.includes('Attendance')) {
+                        label.innerHTML = t('attendanceDays') + ' <span class="required">*</span>';
+                    }
+                    if (text === 'Kostpreferenser' || text === 'Diet Preferences') {
+                        label.textContent = t('dietPreferences');
+                    }
+                    if (text === 'Allergier' || text === 'Allergies') {
+                        label.textContent = t('allergies');
+                    }
+                });
+                
+                // Uppdatera hjälptext
+                const helpText = div.querySelector('.form-group p[style*="font-size: 0.85em"]');
+                if (helpText) helpText.textContent = t('attendanceHelp');
+                
+                // Uppdatera placeholders
+                const nameInput = div.querySelector(`input[id^="participantName"]`);
+                if (nameInput) nameInput.placeholder = t('namePlaceholder');
+                
+                const notesInput = div.querySelector(`textarea[id^="participantNotes"]`);
+                if (notesInput) notesInput.placeholder = t('commentsPlaceholder');
+                
+                // Uppdatera Ta bort-knapp
+                const removeBtn = div.querySelector('.btn-remove');
+                if (removeBtn) removeBtn.textContent = t('remove');
+                
+                // Uppdatera Heldag-knappar
+                const allDayBtns = div.querySelectorAll('.btn-allday');
+                allDayBtns.forEach(btn => btn.textContent = t('allDay'));
+                
+                // Uppdatera kostpreferenser checkboxar
+                const dietCheckboxes = div.querySelectorAll('input[name^="diet-"]');
+                dietCheckboxes.forEach(cb => {
+                    const label = cb.nextElementSibling;
+                    if (label && cb.value) {
+                        const key = cb.value.toLowerCase();
+                        if (key === 'vegetarisk' || key === 'vegetarian') label.textContent = t('vegetarian');
+                        if (key === 'vegansk' || key === 'vegan') label.textContent = t('vegan');
+                        if (key === 'halal') label.textContent = t('halal');
+                    }
+                });
+                
+                // Uppdatera allergen-checkboxar
+                const allergenCheckboxes = div.querySelectorAll('input[name^="allergen-"]');
+                allergenCheckboxes.forEach(cb => {
+                    const label = cb.nextElementSibling;
+                    if (label) {
+                        const allergen = allergensList.find(a => a.id === cb.id.split('-')[0]);
+                        if (allergen) {
+                            label.textContent = t(allergen.key);
+                        }
+                    }
+                });
+                
+                // Uppdatera dagar
+                updateParticipantDays(id);
+            });
+        }
+
+        const allergensList = [
+            { id: 'gluten', key: 'gluten' },
+            { id: 'lactose', key: 'lactose' },
+            { id: 'milk', key: 'milk' },
+            { id: 'legumes', key: 'legumes' },
+            { id: 'crustaceans', key: 'crustaceans' },
+            { id: 'egg', key: 'egg' },
+            { id: 'fish', key: 'fish' },
+            { id: 'peanuts', key: 'peanuts' },
+            { id: 'lupin', key: 'lupin' },
+            { id: 'soy', key: 'soy' },
+            { id: 'nuts', key: 'nuts' },
+            { id: 'stonefruit', key: 'stonefruit' },
+            { id: 'celery', key: 'celery' },
+            { id: 'mustard', key: 'mustard' },
+            { id: 'sesame', key: 'sesame' },
+            { id: 'sulfur', key: 'sulfur' },
+            { id: 'molluscs', key: 'molluscs' }
+        ];
+
+        const mealKeys = ['breakfast', 'fika', 'lunch', 'dinner'];
+
+        document.getElementById('eventStartDate').addEventListener('change', updateAllParticipantDays);
+        document.getElementById('eventEndDate').addEventListener('change', updateAllParticipantDays);
+
+        function updateAllParticipantDays() {
+            const participantDivs = document.querySelectorAll('.participant-item');
+            participantDivs.forEach(div => {
+                const id = div.getAttribute('data-id');
+                updateParticipantDays(id);
+            });
+        }
+
+        function formatDateLong(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            return `${day} ${t('months')[date.getMonth()]}`;
+        }
+
+        // Export-version som använder valt exportspråk
+        function formatDateLongExport(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            return `${day} ${getExportMonths()[date.getMonth()]}`;
+        }
+
+        function formatWeekday(dateStr) {
+            const date = new Date(dateStr);
+            const weekdayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            return t(weekdayKeys[date.getDay()]);
+        }
+
+        // Export-version som använder valt exportspråk
+        function formatWeekdayExport(dateStr) {
+            const date = new Date(dateStr);
+            const weekdayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            return tExport(weekdayKeys[date.getDay()]);
+        }
+
+        function toggleDayMeals(participantId, dateStr) {
+            const dayItem = document.getElementById(`day-item-${participantId}-${dateStr}`);
+            const dayCheckbox = document.getElementById(`day-${participantId}-${dateStr}`);
+            
+            if (dayCheckbox.checked) {
+                dayItem.classList.add('active');
+            } else {
+                dayItem.classList.remove('active');
+                // Avmarkera alla måltider för denna dag
+                mealKeys.forEach(mealKey => {
+                    const mealCheckbox = document.getElementById(`meal-${participantId}-${dateStr}-${mealKey}`);
+                    if (mealCheckbox) mealCheckbox.checked = false;
+                });
+            }
+            updateMealSummary(participantId, dateStr);
+        }
+
+        function updateMealSummary(participantId, dateStr) {
+            const summarySpan = document.getElementById(`meal-summary-${participantId}-${dateStr}`);
+            const selectedMeals = [];
+            
+            mealKeys.forEach(mealKey => {
+                const checkbox = document.getElementById(`meal-${participantId}-${dateStr}-${mealKey}`);
+                if (checkbox && checkbox.checked) {
+                    selectedMeals.push(t(mealKey));
+                }
+            });
+            
+            if (selectedMeals.length === mealKeys.length) {
+                summarySpan.textContent = t('allDay');
+            } else if (selectedMeals.length > 0) {
+                summarySpan.textContent = selectedMeals.join(', ');
+            } else {
+                summarySpan.textContent = t('selectMeals');
+            }
+        }
+
+        function selectAllMeals(participantId, dateStr) {
+            const allChecked = mealKeys.every(mealKey => {
+                const checkbox = document.getElementById(`meal-${participantId}-${dateStr}-${mealKey}`);
+                return checkbox && checkbox.checked;
+            });
+            
+            mealKeys.forEach(mealKey => {
+                const checkbox = document.getElementById(`meal-${participantId}-${dateStr}-${mealKey}`);
+                if (checkbox) {
+                    checkbox.checked = !allChecked;
+                }
+            });
+            
+            updateMealSummary(participantId, dateStr);
+        }
+
+        function updateParticipantDays(participantId) {
+            const startDate = document.getElementById('eventStartDate').value;
+            const endDate = document.getElementById('eventEndDate').value;
+            const daysContainer = document.getElementById(`participantDays-${participantId}`);
+            
+            if (!daysContainer) return;
+            
+            if (!startDate || !endDate) {
+                daysContainer.innerHTML = `<div class="no-dates-message">${t('selectDatesFirst')}</div>`;
+                return;
+            }
+
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            
+            if (start > end) {
+                daysContainer.innerHTML = `<div class="no-dates-message" style="color: #e74c3c;">${t('endDateError')}</div>`;
+                return;
+            }
+
+            let daysHTML = '';
+            const currentDate = new Date(start);
+            
+            while (currentDate <= end) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const displayDate = formatDateLong(dateStr);
+                const weekday = formatWeekday(dateStr);
+                
+                let mealsHTML = '';
+                mealKeys.forEach(mealKey => {
+                    mealsHTML += `
+                        <div class="checkbox-item">
+                            <input type="checkbox" 
+                                   id="meal-${participantId}-${dateStr}-${mealKey}" 
+                                   name="meal-${participantId}-${dateStr}" 
+                                   value="${mealKey}"
+                                   onchange="updateMealSummary(${participantId}, '${dateStr}')">
+                            <label for="meal-${participantId}-${dateStr}-${mealKey}">${t(mealKey)}</label>
+                        </div>
+                    `;
+                });
+                
+                daysHTML += `
+                    <div class="day-meal-item" id="day-item-${participantId}-${dateStr}">
+                        <div class="day-header" onclick="document.getElementById('day-${participantId}-${dateStr}').click();">
+                            <input type="checkbox" 
+                                   id="day-${participantId}-${dateStr}" 
+                                   name="day-${participantId}" 
+                                   value="${dateStr}"
+                                   onclick="event.stopPropagation(); toggleDayMeals(${participantId}, '${dateStr}');">
+                            <span class="day-label">${weekday} ${displayDate}</span>
+                            <span class="meal-summary" id="meal-summary-${participantId}-${dateStr}">${t('selectMeals')}</span>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="meal-options">
+                            <div class="checkbox-group">
+                                ${mealsHTML}
+                            </div>
+                            <button type="button" class="btn-allday" onclick="selectAllMeals(${participantId}, '${dateStr}')">${t('allDay')}</button>
+                        </div>
+                    </div>
+                `;
+                
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            daysContainer.innerHTML = daysHTML;
+        }
+
+        function addParticipant() {
+            participantCounter++;
+            const participantDiv = document.createElement('div');
+            participantDiv.className = 'participant-item';
+            participantDiv.id = `participant-${participantCounter}`;
+            participantDiv.setAttribute('data-id', participantCounter);
+
+            let allergensHTML = '';
+            allergensList.forEach(allergen => {
+                allergensHTML += `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="${allergen.id}-${participantCounter}" name="allergen-${participantCounter}" value="${allergen.key}">
+                        <label for="${allergen.id}-${participantCounter}">${t(allergen.key)}</label>
+                    </div>
+                `;
+            });
+
+            participantDiv.innerHTML = `
+                <div class="participant-header">
+                    <h4>${t('participant')} ${participantCounter}</h4>
+                    <button type="button" class="btn-remove" onclick="removeParticipant(${participantCounter})">${t('remove')}</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="participantName-${participantCounter}">${t('name')}</label>
+                    <input type="text" id="participantName-${participantCounter}" placeholder="${t('namePlaceholder')}">
+                </div>
+
+                <div class="form-group">
+                    <label>${t('attendanceDays')} <span class="required">*</span></label>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 10px;">${t('attendanceHelp')}</p>
+                    <div id="participantDays-${participantCounter}" class="day-meal-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>${t('dietPreferences')}</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="vegetarian-${participantCounter}" name="diet-${participantCounter}" value="vegetarian">
+                            <label for="vegetarian-${participantCounter}">${t('vegetarian')}</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="vegan-${participantCounter}" name="diet-${participantCounter}" value="vegan">
+                            <label for="vegan-${participantCounter}">${t('vegan')}</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pescetarian-${participantCounter}" name="diet-${participantCounter}" value="pescetarian">
+                            <label for="pescetarian-${participantCounter}">${t('pescetarian')}</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pregnant-${participantCounter}" name="diet-${participantCounter}" value="pregnant">
+                            <label for="pregnant-${participantCounter}">${t('pregnant')}</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ibs-${participantCounter}" name="diet-${participantCounter}" value="ibs">
+                            <label for="ibs-${participantCounter}">${t('ibs')}</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="halal-${participantCounter}" name="diet-${participantCounter}" value="halal">
+                            <label for="halal-${participantCounter}">${t('halal')}</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>${t('allergies')}</label>
+                    <div class="checkbox-group">
+                        ${allergensHTML}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="participantNotes-${participantCounter}">${t('comments')}</label>
+                    <textarea id="participantNotes-${participantCounter}" placeholder="${t('commentsPlaceholder')}"></textarea>
+                </div>
+            `;
+
+            document.getElementById('participantsContainer').appendChild(participantDiv);
+            updateParticipantDays(participantCounter);
+        }
+
+        function removeParticipant(id) {
+            const element = document.getElementById(`participant-${id}`);
+            if (element) element.remove();
+        }
+
+        document.getElementById('dietForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            participants = [];
+            const participantDivs = document.querySelectorAll('.participant-item');
+            
+            let validationError = false;
+            
+            participantDivs.forEach(div => {
+                if (validationError) return;
+                
+                const id = div.getAttribute('data-id');
+                const name = document.getElementById(`participantName-${id}`).value;
+                const notes = document.getElementById(`participantNotes-${id}`).value;
+                
+                const allergens = Array.from(document.querySelectorAll(`input[name="allergen-${id}"]:checked`))
+                    .map(cb => cb.value);
+
+                const dietPreferences = Array.from(document.querySelectorAll(`input[name="diet-${id}"]:checked`))
+                    .map(cb => cb.value);
+
+                // Hämta valda dagar
+                const selectedDays = Array.from(document.querySelectorAll(`input[name="day-${id}"]:checked`))
+                    .map(cb => cb.value);
+
+                if (selectedDays.length === 0) {
+                    alert(`${t('selectDayError')} ${name || t('participant') + ' ' + id}`);
+                    validationError = true;
+                    return;
+                }
+
+                // Hämta måltider per dag
+                const dayMeals = {};
+                let hasMeals = false;
+                
+                selectedDays.forEach(dateStr => {
+                    const meals = Array.from(document.querySelectorAll(`input[name="meal-${id}-${dateStr}"]:checked`))
+                        .map(cb => cb.value);
+                    
+                    if (meals.length > 0) {
+                        dayMeals[dateStr] = meals;
+                        hasMeals = true;
+                    }
+                });
+
+                if (!hasMeals) {
+                    alert(`${t('selectMealError')} ${name || t('participant') + ' ' + id}`);
+                    validationError = true;
+                    return;
+                }
+
+                if (allergens.length === 0 && dietPreferences.length === 0) {
+                    alert(`${t('selectDietError')} ${name || t('participant') + ' ' + id}`);
+                    validationError = true;
+                    return;
+                }
+
+                participants.push({
+                    name: name,
+                    dayMeals: dayMeals,
+                    dietPreferences: dietPreferences,
+                    allergens: allergens,
+                    notes: notes
+                });
+            });
+
+            if (validationError) return;
+
+            if (participants.length === 0) {
+                alert(t('addParticipantError'));
+                return;
+            }
+
+            displaySummary();
+            document.getElementById('successMessage').textContent = t('registrationSaved');
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+            document.getElementById('summarySection').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        function displaySummary() {
+            const companyName = document.getElementById('companyName').value;
+            const contactPerson = document.getElementById('contactPerson').value;
+            const contactEmail = document.getElementById('contactEmail').value;
+            const contactPhone = document.getElementById('contactPhone').value;
+            const eventName = document.getElementById('eventName').value;
+            const eventStartDate = document.getElementById('eventStartDate').value;
+            const eventEndDate = document.getElementById('eventEndDate').value;
+
+            let participantsHTML = '';
+            participants.forEach((p, index) => {
+                let daysInfo = '';
+                Object.keys(p.dayMeals).sort().forEach(dateStr => {
+                    const meals = p.dayMeals[dateStr].map(m => t(m));
+                    daysInfo += `<br>&nbsp;&nbsp;• ${formatDateLong(dateStr)}: ${meals.join(', ')}`;
+                });
+                
+                const displayName = p.name || `${t('participant')} ${index + 1}`;
+                const dietDisplay = p.dietPreferences.map(d => t(d)).join(', ');
+                const allergenDisplay = p.allergens.map(a => t(a)).join(', ');
+                
+                participantsHTML += `
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #3d6b1f;">
+                        <h4 style="color: #333; margin-bottom: 8px;">${displayName}</h4>
+                        <p style="color: #666; font-size: 0.9em; margin: 4px 0;"><strong>${t('daysAndMeals')}:</strong>${daysInfo}</p>
+                        ${p.dietPreferences.length > 0 ? `<p style="color: #666; font-size: 0.9em; margin: 4px 0;"><strong>${t('diet')}:</strong> ${dietDisplay}</p>` : ''}
+                        ${p.allergens.length > 0 ? `<p style="color: #666; font-size: 0.9em; margin: 4px 0;"><strong>${t('allergies')}:</strong> ${allergenDisplay}</p>` : ''}
+                        ${p.notes ? `<p style="color: #666; font-size: 0.9em; margin: 4px 0;"><strong>${t('comment')}:</strong> ${p.notes}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            // Uppdatera sammanställningsrubriken
+            const summaryHeader = document.querySelector('#summarySection .section-header h3');
+            if (summaryHeader) summaryHeader.textContent = t('summary');
+
+            document.getElementById('summaryContent').innerHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <p><strong>${t('company')}:</strong> ${companyName} | <strong>${t('contact')}:</strong> ${contactPerson}</p>
+                    <p><strong>${t('event')}:</strong> ${eventName} | <strong>${t('period')}:</strong> ${formatDateLong(eventStartDate)} - ${formatDateLong(eventEndDate)}</p>
+                    <p><strong>${t('specialDiet')}:</strong> ${participants.length} st</p>
+                </div>
+                <div>${participantsHTML}</div>
+            `;
+            document.getElementById('summarySection').style.display = 'block';
+        }
+
+        function getComboLabel(p) {
+            let parts = [];
+            if (p.dietPreferences) {
+                parts = parts.concat(p.dietPreferences.map(d => t(d)));
+            }
+            p.allergens.forEach(a => {
+                parts.push(t(a));
+            });
+            return parts.join(' + ') || '-';
+        }
+
+        // Export-version som använder valt exportspråk
+        function getComboLabelExport(p) {
+            let parts = [];
+            if (p.dietPreferences) {
+                parts = parts.concat(p.dietPreferences.map(d => tExport(d)));
+            }
+            p.allergens.forEach(a => {
+                parts.push(tExport(a));
+            });
+            return parts.join(' + ') || '-';
+        }
+
+        function isSpecialCase(p) {
+            const ovanliga = ['crustaceans', 'egg', 'fish', 'peanuts', 'lupin', 'soy', 'milk',
+                'stonefruit', 'celery', 'mustard', 'sesame', 'sulfur', 'molluscs'];
+            return p.allergens.some(a => ovanliga.includes(a));
+        }
+
+        async function exportToExcel() {
+            const workbook = new ExcelJS.Workbook();
+            const companyName = document.getElementById('companyName').value;
+            const eventStartDate = document.getElementById('eventStartDate').value;
+            const eventEndDate = document.getElementById('eventEndDate').value;
+            const exportLang = document.getElementById('exportLang')?.value || currentLang;
+            
+            // Hämta alla unika datum
+            const start = new Date(eventStartDate);
+            const end = new Date(eventEndDate);
+            const allDates = [];
+            const currentDate = new Date(start);
+            while (currentDate <= end) {
+                allDates.push(currentDate.toISOString().split('T')[0]);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // Samla endast de kostpreferenser och allergier som faktiskt används
+            const usedDiets = new Set();
+            const usedAllergens = new Set();
+            
+            participants.forEach(p => {
+                p.dietPreferences.forEach(d => usedDiets.add(d));
+                p.allergens.forEach(a => usedAllergens.add(a));
+            });
+            
+            // Behåll ordningen från originallistan men filtrera
+            const dietOptionKeys = ['vegetarian', 'vegan', 'pescetarian', 'pregnant', 'ibs', 'halal'].filter(d => usedDiets.has(d));
+            const allergenKeysUsed = allergensList.map(a => a.key).filter(a => usedAllergens.has(a));
+
+            // Skapa flikar för varje dag
+            allDates.forEach(dateStr => {
+                const dateLabel = formatDateLongExport(dateStr);
+                const weekday = formatWeekdayExport(dateStr);
+                
+                // HUVUDFLIK MED ALLA KOLUMNER
+                const ws = workbook.addWorksheet(`${weekday} ${dateLabel}`);
+                
+                // Kolumnrubriker med översättningar
+                const dietHeaders = dietOptionKeys.map(d => tExport(d));
+                const allergenHeaders = allergenKeysUsed.map(a => tExport(a));
+                const headers = ['✓', tExport('name'), tExport('breakfast').charAt(0).toUpperCase() + tExport('breakfast').slice(1), ...dietHeaders, ...allergenHeaders, tExport('comment')];
+                const headerRow = ws.getRow(1);
+                
+                headers.forEach((header, index) => {
+                    const cell = headerRow.getCell(index + 1);
+                    cell.value = header;
+                    cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3D6B1F' } };
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                });
+                
+                // Uppdatera måltidsrubriken
+                ws.getCell(1, 3).value = exportLang === 'sv' ? 'Måltid' : 'Meal';
+                
+                // Sätt kolumnbredder
+                ws.getColumn(1).width = 4;  // ✓
+                ws.getColumn(2).width = 25; // Namn
+                ws.getColumn(3).width = 10; // Måltid
+                
+                // Dietkolumner
+                for (let i = 0; i < dietOptionKeys.length; i++) {
+                    ws.getColumn(4 + i).width = 12;
+                }
+                
+                // Allergenkolumner
+                for (let i = 0; i < allergenKeysUsed.length; i++) {
+                    ws.getColumn(4 + dietOptionKeys.length + i).width = 10;
+                }
+                
+                // Kommentarkolumn
+                ws.getColumn(headers.length).width = 30;
+                
+                let rowIndex = 2;
+                
+                mealKeys.forEach(mealKey => {
+                    // Filtrera deltagare som har denna måltid på denna dag
+                    const mealPeople = participants.filter(p => 
+                        p.dayMeals[dateStr] && p.dayMeals[dateStr].includes(mealKey)
+                    );
+                    
+                    if (mealPeople.length === 0) return;
+                    
+                    // Sortera alfabetiskt
+                    const sorted = [...mealPeople].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                    
+                    sorted.forEach((p, idx) => {
+                        const row = ws.getRow(rowIndex);
+                        
+                        // Checkruta
+                        row.getCell(1).value = '☐';
+                        row.getCell(1).alignment = { horizontal: 'center' };
+                        
+                        // Namn
+                        row.getCell(2).value = p.name || `${tExport('participant')} ${idx + 1}`;
+                        row.getCell(2).font = { bold: true };
+                        
+                        // Måltid
+                        row.getCell(3).value = tExport(mealKey);
+                        row.getCell(3).alignment = { horizontal: 'center' };
+                        
+                        // Dietpreferenser (ja/nej)
+                        dietOptionKeys.forEach((diet, i) => {
+                            const cell = row.getCell(4 + i);
+                            const hasIt = p.dietPreferences.includes(diet);
+                            cell.value = hasIt ? 'X' : '';
+                            cell.alignment = { horizontal: 'center' };
+                            if (hasIt) {
+                                cell.font = { bold: true, color: { argb: 'FF3D6B1F' } };
+                            }
+                        });
+                        
+                        // Allergier (ja/nej)
+                        allergenKeysUsed.forEach((allergen, i) => {
+                            const cell = row.getCell(4 + dietOptionKeys.length + i);
+                            const hasIt = p.allergens.includes(allergen);
+                            cell.value = hasIt ? 'X' : '';
+                            cell.alignment = { horizontal: 'center' };
+                            if (hasIt) {
+                                cell.font = { bold: true, color: { argb: 'FFE74C3C' } };
+                            }
+                        });
+                        
+                        // Kommentar
+                        row.getCell(headers.length).value = p.notes || '';
+                        
+                        // Lägg till kantlinjer på alla celler
+                        for (let col = 1; col <= headers.length; col++) {
+                            row.getCell(col).border = {
+                                top: { style: 'thin', color: { argb: 'FFE0E0E0' } },
+                                left: { style: 'thin', color: { argb: 'FFE0E0E0' } },
+                                bottom: { style: 'thin', color: { argb: 'FFE0E0E0' } },
+                                right: { style: 'thin', color: { argb: 'FFE0E0E0' } }
+                            };
+                        }
+                        
+                        // Alternera radfärg
+                        if (rowIndex % 2 === 0) {
+                            for (let col = 1; col <= headers.length; col++) {
+                                row.getCell(col).fill = {
+                                    type: 'pattern',
+                                    pattern: 'solid',
+                                    fgColor: { argb: 'FFF8F9FA' }
+                                };
+                            }
+                        }
+                        
+                        rowIndex++;
+                    });
+                });
+                
+                // Aktivera filter
+                if (rowIndex > 2) {
+                    ws.autoFilter = {
+                        from: { row: 1, column: 1 },
+                        to: { row: rowIndex - 1, column: headers.length }
+                    };
+                }
+                
+                // Frys översta raden
+                ws.views = [{ state: 'frozen', ySplit: 1 }];
+            });
+
+            // SAMMANSTÄLLNINGSFLIK
+            const wsSummary = workbook.addWorksheet(tExport('summary'));
+            
+            const summaryDietHeaders = dietOptionKeys.map(d => tExport(d));
+            const summaryAllergenHeaders = allergenKeysUsed.map(a => tExport(a));
+            const summaryHeaders = [tExport('name'), exportLang === 'sv' ? 'Dag' : 'Day', exportLang === 'sv' ? 'Måltid' : 'Meal', ...summaryDietHeaders, ...summaryAllergenHeaders, tExport('comment')];
+            const summaryHeaderRow = wsSummary.getRow(1);
+            
+            summaryHeaders.forEach((header, index) => {
+                const cell = summaryHeaderRow.getCell(index + 1);
+                cell.value = header;
+                cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3D6B1F' } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+            });
+            
+            wsSummary.getColumn(1).width = 25;
+            wsSummary.getColumn(2).width = 15;
+            wsSummary.getColumn(3).width = 10;
+            
+            let summaryRow = 2;
+            
+            participants.forEach((p, idx) => {
+                Object.keys(p.dayMeals).sort().forEach(dateStr => {
+                    p.dayMeals[dateStr].forEach(mealKey => {
+                        const row = wsSummary.getRow(summaryRow);
+                        
+                        row.getCell(1).value = p.name || `${tExport('participant')} ${idx + 1}`;
+                        row.getCell(2).value = formatDateLongExport(dateStr);
+                        row.getCell(3).value = tExport(mealKey);
+                        
+                        dietOptionKeys.forEach((diet, i) => {
+                            row.getCell(4 + i).value = p.dietPreferences.includes(diet) ? 'X' : '';
+                            row.getCell(4 + i).alignment = { horizontal: 'center' };
+                        });
+                        
+                        allergenKeysUsed.forEach((allergen, i) => {
+                            row.getCell(4 + dietOptionKeys.length + i).value = p.allergens.includes(allergen) ? 'X' : '';
+                            row.getCell(4 + dietOptionKeys.length + i).alignment = { horizontal: 'center' };
+                        });
+                        
+                        row.getCell(summaryHeaders.length).value = p.notes || '';
+                        
+                        summaryRow++;
+                    });
+                });
+            });
+            
+            wsSummary.autoFilter = {
+                from: { row: 1, column: 1 },
+                to: { row: summaryRow - 1, column: summaryHeaders.length }
+            };
+            
+            wsSummary.views = [{ state: 'frozen', ySplit: 1 }];
+
+            // Ladda ner
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `specialkost_${companyName.replace(/\s+/g, '_')}.xlsx`;
+            link.click();
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const companyName = document.getElementById('companyName').value;
+            const eventName = document.getElementById('eventName').value;
+            const exportLang = document.getElementById('exportLang')?.value || currentLang;
+            
+            let y = 20;
+            doc.setFontSize(18);
+            doc.setTextColor(61, 107, 31);
+            doc.text(tExport('specialDiet'), 105, y, { align: 'center' });
+            y += 10;
+            
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`${companyName} - ${eventName}`, 105, y, { align: 'center' });
+            y += 15;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            
+            participants.forEach((p, i) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                doc.setFont(undefined, 'bold');
+                doc.text(`${i + 1}. ${p.name || tExport('participant') + ' ' + (i + 1)}`, 20, y);
+                y += 6;
+                
+                doc.setFont(undefined, 'normal');
+                doc.text(`   ${getComboLabelExport(p)}`, 20, y);
+                y += 6;
+                
+                // Visa dagar och måltider
+                Object.keys(p.dayMeals).sort().forEach(dateStr => {
+                    const meals = p.dayMeals[dateStr].map(m => tExport(m));
+                    doc.text(`   ${formatDateLongExport(dateStr)}: ${meals.join(', ')}`, 20, y);
+                    y += 5;
+                });
+                
+                y += 8;
+            });
+            
+            doc.save(`specialkost_${companyName.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        addParticipant();
+    </script>
+</body>
+</html>
