@@ -32,6 +32,7 @@
             color: white;
             padding: 40px 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -42,6 +43,19 @@
         .header p {
             font-size: 1.1em;
             opacity: 0.95;
+        }
+
+        /* Nya klasser för huvudrubriker */
+        .main-title {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0 15px 0;
+            letter-spacing: -1px;
+        }
+
+        .main-subtitle {
+            font-size: 1.5em;
+            font-weight: 400;
         }
 
         .form-section {
@@ -233,6 +247,15 @@
                 font-size: 1.8em;
             }
             
+            /* Responsiv styling för huvudrubriken */
+            .main-title {
+                font-size: 2.2em;
+            }
+            
+            .main-subtitle {
+                font-size: 1.1em;
+            }
+            
             .form-section {
                 padding: 30px 20px;
             }
@@ -243,6 +266,20 @@
 
             .two-column {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.8em;
+            }
+            
+            .main-subtitle {
+                font-size: 1em;
+            }
+            
+            .header {
+                padding: 30px 20px;
             }
         }
 
@@ -394,8 +431,11 @@
             background: rgba(255,255,255,0.3);
         }
 
-        .header {
-            position: relative;
+        @media (max-width: 480px) {
+            .meal-options .checkbox-group {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -417,8 +457,8 @@
                     </div>
                 </div>
             </div>
-            <h1 style="font-size: 4em; font-weight: bold; margin: 20px 0 15px 0; letter-spacing: -1px;">Dietregistrering</h1>
-            <p style="font-size: 1.5em; font-weight: 400;">Specialkost & Allergier</p>
+            <h1 class="main-title">Dietregistrering</h1>
+            <p class="main-subtitle">Specialkost & Allergier</p>
         </div>
 
         <div class="form-section">
@@ -726,9 +766,9 @@
             // Uppdatera språkknappen
             document.querySelector('.lang-toggle').textContent = t('langButton');
             
-            // Uppdatera header
-            document.querySelector('.header h1').textContent = t('pageTitle');
-            document.querySelector('.header p[style*="font-size: 1.5em"]').textContent = t('pageSubtitle');
+            // Uppdatera header - nu med klassväljare
+            document.querySelector('.main-title').textContent = t('pageTitle');
+            document.querySelector('.main-subtitle').textContent = t('pageSubtitle');
             
             // Uppdatera sektionsrubriker
             const sectionHeaders = document.querySelectorAll('.section-header h3');
