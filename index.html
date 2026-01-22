@@ -1525,130 +1525,91 @@
                 ws.views = [{ state: 'frozen', ySplit: 1 }];
             });
 
-            // SAMMANSTÄLLNINGSFLIK
-            const wsSummary = workbook.addWorksheet(tExport('summary'));
+            // ÖVERSIKTSFLIK - dag för dag
+            const wsOverview = workbook.addWorksheet(exportLang === 'sv' ? 'Översikt' : 'Overview');
             
-            // ÖVERSIKT - Antal per allergi/preferens
-            let summaryRowNum = 1;
+            let overviewRow = 1;
             
-            // Rubrik för översikt
-            const overviewTitle = wsSummary.getRow(summaryRowNum);
-            overviewTitle.getCell(1).value = exportLang === 'sv' ? 'ÖVERSIKT' : 'OVERVIEW';
-            overviewTitle.getCell(1).font = { bold: true, size: 14, color: { argb: 'FF3D6B1F' } };
-            summaryRowNum += 2;
-            
-            // Räkna antal per preferens och allergi
-            const dietCounts = {};
-            const allergenCounts = {};
-            
-            participants.forEach(p => {
-                p.dietPreferences.forEach(d => {
-                    dietCounts[d] = (dietCounts[d] || 0) + 1;
-                });
-                p.allergens.forEach(a => {
-                    allergenCounts[a] = (allergenCounts[a] || 0) + 1;
-                });
-            });
-            
-            // Visa kostpreferenser
-            if (Object.keys(dietCounts).length > 0) {
-                const dietHeader = wsSummary.getRow(summaryRowNum);
-                dietHeader.getCell(1).value = exportLang === 'sv' ? 'Kostpreferenser:' : 'Diet Preferences:';
-                dietHeader.getCell(1).font = { bold: true };
-                summaryRowNum++;
-                
-                Object.entries(dietCounts).sort((a, b) => b[1] - a[1]).forEach(([diet, count]) => {
-                    const row = wsSummary.getRow(summaryRowNum);
-                    row.getCell(1).value = `  ${tExport(diet)}`;
-                    row.getCell(2).value = count;
-                    row.getCell(2).font = { bold: true, color: { argb: 'FF3D6B1F' } };
-                    summaryRowNum++;
-                });
-                summaryRowNum++;
-            }
-            
-            // Visa allergier
-            if (Object.keys(allergenCounts).length > 0) {
-                const allergenHeader = wsSummary.getRow(summaryRowNum);
-                allergenHeader.getCell(1).value = exportLang === 'sv' ? 'Allergier:' : 'Allergies:';
-                allergenHeader.getCell(1).font = { bold: true };
-                summaryRowNum++;
-                
-                Object.entries(allergenCounts).sort((a, b) => b[1] - a[1]).forEach(([allergen, count]) => {
-                    const row = wsSummary.getRow(summaryRowNum);
-                    row.getCell(1).value = `  ${tExport(allergen)}`;
-                    row.getCell(2).value = count;
-                    row.getCell(2).font = { bold: true, color: { argb: 'FFE74C3C' } };
-                    summaryRowNum++;
-                });
-                summaryRowNum++;
-            }
+            // Rubrik
+            const titleRow = wsOverview.getRow(overviewRow);
+            titleRow.getCell(1).value = exportLang === 'sv' ? 'ÖVERSIKT - SPECIALKOST PER DAG' : 'OVERVIEW - SPECIAL DIET PER DAY';
+            titleRow.getCell(1).font = { bold: true, size: 14, color: { argb: 'FF3D6B1F' } };
+            overviewRow += 2;
             
             // Totalt antal
-            const totalRow = wsSummary.getRow(summaryRowNum);
+            const totalRow = wsOverview.getRow(overviewRow);
             totalRow.getCell(1).value = exportLang === 'sv' ? 'Totalt antal personer med specialkost:' : 'Total people with special diet:';
             totalRow.getCell(1).font = { bold: true };
             totalRow.getCell(2).value = participants.length;
-            totalRow.getCell(2).font = { bold: true, size: 12 };
-            summaryRowNum += 3;
+            totalRow.getCell(2).font = { bold: true, size: 12, color: { argb: 'FF3D6B1F' } };
+            overviewRow += 2;
             
-            // DETALJERAD LISTA
-            const detailTitle = wsSummary.getRow(summaryRowNum);
-            detailTitle.getCell(1).value = exportLang === 'sv' ? 'DETALJERAD LISTA' : 'DETAILED LIST';
-            detailTitle.getCell(1).font = { bold: true, size: 14, color: { argb: 'FF3D6B1F' } };
-            summaryRowNum += 1;
-            
-            const summaryDietHeaders = dietOptionKeys.map(d => tExport(d));
-            const summaryAllergenHeaders = allergenKeysUsed.map(a => tExport(a));
-            const summaryHeaders = [tExport('name'), exportLang === 'sv' ? 'Dag' : 'Day', exportLang === 'sv' ? 'Måltid' : 'Meal', ...summaryDietHeaders, ...summaryAllergenHeaders, tExport('comment')];
-            const summaryHeaderRow = wsSummary.getRow(summaryRowNum);
-            
-            summaryHeaders.forEach((header, index) => {
-                const cell = summaryHeaderRow.getCell(index + 1);
-                cell.value = header;
-                cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3D6B1F' } };
-                cell.alignment = { horizontal: 'center', vertical: 'middle' };
-            });
-            
-            wsSummary.getColumn(1).width = 25;
-            wsSummary.getColumn(2).width = 15;
-            wsSummary.getColumn(3).width = 10;
-            
-            summaryRowNum++;
-            
-            participants.forEach((p, idx) => {
-                Object.keys(p.dayMeals).sort().forEach(dateStr => {
-                    p.dayMeals[dateStr].forEach(mealKey => {
-                        const row = wsSummary.getRow(summaryRowNum);
-                        
-                        row.getCell(1).value = p.name || `${tExport('participant')} ${idx + 1}`;
-                        row.getCell(2).value = formatDateLongExport(dateStr);
-                        row.getCell(3).value = tExport(mealKey);
-                        
-                        dietOptionKeys.forEach((diet, i) => {
-                            row.getCell(4 + i).value = p.dietPreferences.includes(diet) ? 'X' : '';
-                            row.getCell(4 + i).alignment = { horizontal: 'center' };
+            // Gå igenom varje dag
+            allDates.forEach(dateStr => {
+                const dateLabel = formatDateLongExport(dateStr);
+                const weekday = formatWeekdayExport(dateStr);
+                
+                // Dagrubrik
+                const dayHeaderRow = wsOverview.getRow(overviewRow);
+                dayHeaderRow.getCell(1).value = `${weekday} ${dateLabel}`;
+                dayHeaderRow.getCell(1).font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' } };
+                dayHeaderRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3D6B1F' } };
+                wsOverview.mergeCells(overviewRow, 1, overviewRow, 4);
+                overviewRow++;
+                
+                // Gå igenom varje måltid
+                mealKeys.forEach(mealKey => {
+                    // Hitta alla som har denna måltid denna dag
+                    const mealPeople = participants.filter(p => 
+                        p.dayMeals[dateStr] && p.dayMeals[dateStr].includes(mealKey)
+                    );
+                    
+                    if (mealPeople.length === 0) return;
+                    
+                    // Räkna preferenser och allergier för denna måltid
+                    const mealDietCounts = {};
+                    const mealAllergenCounts = {};
+                    
+                    mealPeople.forEach(p => {
+                        p.dietPreferences.forEach(d => {
+                            mealDietCounts[d] = (mealDietCounts[d] || 0) + 1;
                         });
-                        
-                        allergenKeysUsed.forEach((allergen, i) => {
-                            row.getCell(4 + dietOptionKeys.length + i).value = p.allergens.includes(allergen) ? 'X' : '';
-                            row.getCell(4 + dietOptionKeys.length + i).alignment = { horizontal: 'center' };
+                        p.allergens.forEach(a => {
+                            mealAllergenCounts[a] = (mealAllergenCounts[a] || 0) + 1;
                         });
-                        
-                        row.getCell(summaryHeaders.length).value = p.notes || '';
-                        
-                        summaryRowNum++;
                     });
+                    
+                    // Bygg upp textsträng med alla counts
+                    let countParts = [];
+                    
+                    // Lägg till preferenser
+                    Object.entries(mealDietCounts).forEach(([diet, count]) => {
+                        countParts.push(`${count} ${tExport(diet).toLowerCase()}`);
+                    });
+                    
+                    // Lägg till allergier  
+                    Object.entries(mealAllergenCounts).forEach(([allergen, count]) => {
+                        countParts.push(`${count} ${tExport(allergen).toLowerCase()}`);
+                    });
+                    
+                    const row = wsOverview.getRow(overviewRow);
+                    row.getCell(1).value = `  ${tExport(mealKey)}`;
+                    row.getCell(1).font = { bold: true };
+                    row.getCell(2).value = `${mealPeople.length} st`;
+                    row.getCell(2).font = { color: { argb: 'FF3D6B1F' } };
+                    row.getCell(3).value = countParts.join(', ');
+                    row.getCell(3).font = { color: { argb: 'FF666666' } };
+                    
+                    overviewRow++;
                 });
+                
+                overviewRow++; // Tom rad mellan dagar
             });
             
-            wsSummary.autoFilter = {
-                from: { row: summaryRowNum - participants.reduce((acc, p) => acc + Object.values(p.dayMeals).flat().length, 0), column: 1 },
-                to: { row: summaryRowNum - 1, column: summaryHeaders.length }
-            };
-            
-            wsSummary.views = [{ state: 'frozen', ySplit: 0 }];
+            // Kolumnbredder
+            wsOverview.getColumn(1).width = 20;
+            wsOverview.getColumn(2).width = 10;
+            wsOverview.getColumn(3).width = 80;
 
             // Ladda ner
             const buffer = await workbook.xlsx.writeBuffer();
