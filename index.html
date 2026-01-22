@@ -1528,10 +1528,80 @@
             // SAMMANSTÄLLNINGSFLIK
             const wsSummary = workbook.addWorksheet(tExport('summary'));
             
+            // ÖVERSIKT - Antal per allergi/preferens
+            let summaryRowNum = 1;
+            
+            // Rubrik för översikt
+            const overviewTitle = wsSummary.getRow(summaryRowNum);
+            overviewTitle.getCell(1).value = exportLang === 'sv' ? 'ÖVERSIKT' : 'OVERVIEW';
+            overviewTitle.getCell(1).font = { bold: true, size: 14, color: { argb: 'FF3D6B1F' } };
+            summaryRowNum += 2;
+            
+            // Räkna antal per preferens och allergi
+            const dietCounts = {};
+            const allergenCounts = {};
+            
+            participants.forEach(p => {
+                p.dietPreferences.forEach(d => {
+                    dietCounts[d] = (dietCounts[d] || 0) + 1;
+                });
+                p.allergens.forEach(a => {
+                    allergenCounts[a] = (allergenCounts[a] || 0) + 1;
+                });
+            });
+            
+            // Visa kostpreferenser
+            if (Object.keys(dietCounts).length > 0) {
+                const dietHeader = wsSummary.getRow(summaryRowNum);
+                dietHeader.getCell(1).value = exportLang === 'sv' ? 'Kostpreferenser:' : 'Diet Preferences:';
+                dietHeader.getCell(1).font = { bold: true };
+                summaryRowNum++;
+                
+                Object.entries(dietCounts).sort((a, b) => b[1] - a[1]).forEach(([diet, count]) => {
+                    const row = wsSummary.getRow(summaryRowNum);
+                    row.getCell(1).value = `  ${tExport(diet)}`;
+                    row.getCell(2).value = count;
+                    row.getCell(2).font = { bold: true, color: { argb: 'FF3D6B1F' } };
+                    summaryRowNum++;
+                });
+                summaryRowNum++;
+            }
+            
+            // Visa allergier
+            if (Object.keys(allergenCounts).length > 0) {
+                const allergenHeader = wsSummary.getRow(summaryRowNum);
+                allergenHeader.getCell(1).value = exportLang === 'sv' ? 'Allergier:' : 'Allergies:';
+                allergenHeader.getCell(1).font = { bold: true };
+                summaryRowNum++;
+                
+                Object.entries(allergenCounts).sort((a, b) => b[1] - a[1]).forEach(([allergen, count]) => {
+                    const row = wsSummary.getRow(summaryRowNum);
+                    row.getCell(1).value = `  ${tExport(allergen)}`;
+                    row.getCell(2).value = count;
+                    row.getCell(2).font = { bold: true, color: { argb: 'FFE74C3C' } };
+                    summaryRowNum++;
+                });
+                summaryRowNum++;
+            }
+            
+            // Totalt antal
+            const totalRow = wsSummary.getRow(summaryRowNum);
+            totalRow.getCell(1).value = exportLang === 'sv' ? 'Totalt antal personer med specialkost:' : 'Total people with special diet:';
+            totalRow.getCell(1).font = { bold: true };
+            totalRow.getCell(2).value = participants.length;
+            totalRow.getCell(2).font = { bold: true, size: 12 };
+            summaryRowNum += 3;
+            
+            // DETALJERAD LISTA
+            const detailTitle = wsSummary.getRow(summaryRowNum);
+            detailTitle.getCell(1).value = exportLang === 'sv' ? 'DETALJERAD LISTA' : 'DETAILED LIST';
+            detailTitle.getCell(1).font = { bold: true, size: 14, color: { argb: 'FF3D6B1F' } };
+            summaryRowNum += 1;
+            
             const summaryDietHeaders = dietOptionKeys.map(d => tExport(d));
             const summaryAllergenHeaders = allergenKeysUsed.map(a => tExport(a));
             const summaryHeaders = [tExport('name'), exportLang === 'sv' ? 'Dag' : 'Day', exportLang === 'sv' ? 'Måltid' : 'Meal', ...summaryDietHeaders, ...summaryAllergenHeaders, tExport('comment')];
-            const summaryHeaderRow = wsSummary.getRow(1);
+            const summaryHeaderRow = wsSummary.getRow(summaryRowNum);
             
             summaryHeaders.forEach((header, index) => {
                 const cell = summaryHeaderRow.getCell(index + 1);
@@ -1545,12 +1615,12 @@
             wsSummary.getColumn(2).width = 15;
             wsSummary.getColumn(3).width = 10;
             
-            let summaryRow = 2;
+            summaryRowNum++;
             
             participants.forEach((p, idx) => {
                 Object.keys(p.dayMeals).sort().forEach(dateStr => {
                     p.dayMeals[dateStr].forEach(mealKey => {
-                        const row = wsSummary.getRow(summaryRow);
+                        const row = wsSummary.getRow(summaryRowNum);
                         
                         row.getCell(1).value = p.name || `${tExport('participant')} ${idx + 1}`;
                         row.getCell(2).value = formatDateLongExport(dateStr);
@@ -1568,17 +1638,17 @@
                         
                         row.getCell(summaryHeaders.length).value = p.notes || '';
                         
-                        summaryRow++;
+                        summaryRowNum++;
                     });
                 });
             });
             
             wsSummary.autoFilter = {
-                from: { row: 1, column: 1 },
-                to: { row: summaryRow - 1, column: summaryHeaders.length }
+                from: { row: summaryRowNum - participants.reduce((acc, p) => acc + Object.values(p.dayMeals).flat().length, 0), column: 1 },
+                to: { row: summaryRowNum - 1, column: summaryHeaders.length }
             };
             
-            wsSummary.views = [{ state: 'frozen', ySplit: 1 }];
+            wsSummary.views = [{ state: 'frozen', ySplit: 0 }];
 
             // Ladda ner
             const buffer = await workbook.xlsx.writeBuffer();
@@ -1593,20 +1663,69 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const companyName = document.getElementById('companyName').value;
+            const contactPerson = document.getElementById('contactPerson').value;
+            const contactEmail = document.getElementById('contactEmail').value;
+            const contactPhone = document.getElementById('contactPhone').value;
             const eventName = document.getElementById('eventName').value;
+            const eventStartDate = document.getElementById('eventStartDate').value;
+            const eventEndDate = document.getElementById('eventEndDate').value;
             const exportLang = document.getElementById('exportLang')?.value || currentLang;
             
             let y = 20;
             doc.setFontSize(18);
             doc.setTextColor(61, 107, 31);
             doc.text(tExport('specialDiet'), 105, y, { align: 'center' });
-            y += 10;
+            y += 12;
             
-            doc.setFontSize(12);
-            doc.setTextColor(100, 100, 100);
-            doc.text(`${companyName} - ${eventName}`, 105, y, { align: 'center' });
+            // Eventnamn
+            doc.setFontSize(14);
+            doc.setTextColor(50, 50, 50);
+            doc.text(eventName, 105, y, { align: 'center' });
             y += 15;
             
+            // Kontaktinformation i en box
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            doc.setDrawColor(61, 107, 31);
+            doc.setLineWidth(0.5);
+            doc.rect(20, y, 170, 28);
+            
+            y += 7;
+            doc.setFont(undefined, 'bold');
+            doc.text(`${tExport('company')}:`, 25, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(companyName, 55, y);
+            
+            doc.setFont(undefined, 'bold');
+            doc.text(`${tExport('contact')}:`, 105, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(contactPerson, 130, y);
+            
+            y += 7;
+            doc.setFont(undefined, 'bold');
+            doc.text(`${tExport('email')}:`, 25, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(contactEmail, 55, y);
+            
+            doc.setFont(undefined, 'bold');
+            doc.text(`${tExport('phone')}:`, 105, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(contactPhone, 130, y);
+            
+            y += 7;
+            doc.setFont(undefined, 'bold');
+            doc.text(`${tExport('period')}:`, 25, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(`${formatDateLongExport(eventStartDate)} - ${formatDateLongExport(eventEndDate)}`, 55, y);
+            
+            doc.setFont(undefined, 'bold');
+            doc.text(`${tExport('specialDiet')}:`, 105, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(`${participants.length} st`, 145, y);
+            
+            y += 18;
+            
+            // Deltagarlista
             doc.setFontSize(10);
             doc.setTextColor(0, 0, 0);
             
@@ -1631,7 +1750,14 @@
                     y += 5;
                 });
                 
-                y += 8;
+                if (p.notes) {
+                    doc.setFont(undefined, 'italic');
+                    doc.text(`   ${tExport('comment')}: ${p.notes}`, 20, y);
+                    doc.setFont(undefined, 'normal');
+                    y += 5;
+                }
+                
+                y += 5;
             });
             
             doc.save(`specialkost_${companyName.replace(/\s+/g, '_')}.pdf`);
